@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniVision OS Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #2d2d2d; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h2 { color: #4CAF50; text-align: center; }
+        textarea, input[type="text"] { width: 100%; padding: 10px; margin-top: 10px; margin-bottom: 15px; background: #3c3c3c; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        button { background: #4CAF50; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 16px; width: 100%; }
+        button:hover { background: #45a049; }
+        .output { background: #1e1e1e; padding: 15px; margin-top: 20px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; max-height: 300px; overflow-y: auto; border: 1px solid #444; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>OmniVision OS Dashboard</h2>
+    
+    <label>Command Goal:</label>
+    <input type="text" id="goalInput" placeholder="e.g., Find the Windows search bar and click it">
+    
+    <button onclick="runWorkflow()">Run Autonomous Workflow</button>
+    
+    <h3>Execution Output:</h3>
+    <div class="output" id="outputBox">Ready for commands...</div>
+</div>
+
+<script>
+    async function runWorkflow() {
+        const goal = document.getElementById("goalInput").value;
+        const outputBox = document.getElementById("outputBox");
+        
+        if (!goal) {
+            alert("Please enter a goal!");
+            return;
+        }
+        
+        outputBox.innerText = "Executing workflow... Please wait (running local LLaVA model)...";
+        
+        try {
+            const response = await fetch("http://127.0.0.1:8000/run-workflow", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ goal: goal })
+            });
+            
+            const data = await response.json();
+            outputBox.innerText = JSON.stringify(data, null, 2);
+        } catch (error) {
+            outputBox.innerText = "Error connecting to backend: " + error;
+        }
+    }
+</script>
+
+</body>
+</html>
